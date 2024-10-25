@@ -113,7 +113,7 @@ local function updateScrollingFrame()
                     if targetNPC and targetNPC.PrimaryPart and character then
                         character:MoveTo(targetNPC.PrimaryPart.Position)
                     end
-                    wait(1)
+                    wait(0.01)
                 end
             end
         end
