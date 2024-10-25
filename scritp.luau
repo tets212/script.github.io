@@ -1,9 +1,12 @@
 local player = game.Players.LocalPlayer
 local targets = {}
 
-for _, npc in ipairs(game.Workspace.ClientNPCs:GetChildren()) do
-    if npc:IsA("Model") and npc:FindFirstChild("Humanoid") then
-        table.insert(targets, npc.Name)
+local function updateTargets()
+    targets = {}
+    for _, npc in ipairs(game.Workspace.NPCs:GetChildren()) do
+        if npc:IsA("Model") and npc:FindFirstChild("Humanoid") then
+            table.insert(targets, npc.Name)
+        end
     end
 end
 
@@ -60,54 +63,64 @@ scrollingFrame.ScrollBarThickness = 8
 scrollingFrame.BackgroundTransparency = 1
 scrollingFrame.Parent = mainFrame
 
-for i, npcName in ipairs(targets) do
-    local teleporting = false
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.7, 0, 0, 50)
-    label.Position = UDim2.new(0, 0, 0, (i-1) * 60)
-    label.Text = "Auto " .. npcName
-    label.TextScaled = true
-    label.TextColor3 = Color3.fromRGB(255, 204, 0)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.FredokaOne
-    label.Parent = scrollingFrame
-
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0.2, 0, 0, 50)
-    button.Position = UDim2.new(0.75, 0, 0, (i-1) * 60)
-    button.Text = "Off"
-    button.TextScaled = true
-    button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BackgroundTransparency = 0.5
-    button.Font = Enum.Font.FredokaOne
-    button.Parent = scrollingFrame
-
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
-    buttonCorner.Parent = button
-    
-    local function toggleTeleport()
-        teleporting = not teleporting
-        if teleporting then
-            button.Text = "On"
-            button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            while teleporting do
-                local targetNPC = game.Workspace.ClientNPCs:FindFirstChild(npcName)
-                local character = player.Character
-                if targetNPC and targetNPC.PrimaryPart and character then
-                    character:MoveTo(targetNPC.PrimaryPart.Position)
-                end
-                wait(1)
-            end
-        else
-            button.Text = "Off"
-            button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+local function updateScrollingFrame()
+    for _, child in pairs(scrollingFrame:GetChildren()) do
+        if child:IsA("TextLabel") or child:IsA("TextButton") then
+            child:Destroy()
         end
     end
 
-    button.MouseButton1Click:Connect(toggleTeleport)
+    updateTargets()
+
+    for i, npcName in ipairs(targets) do
+        local teleporting = false
+        
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.7, 0, 0, 50)
+        label.Position = UDim2.new(0, 0, 0, (i-1) * 60)
+        label.Text = "Auto " .. npcName
+        label.TextScaled = true
+        label.TextColor3 = Color3.fromRGB(255, 204, 0)
+        label.BackgroundTransparency = 1
+        label.Font = Enum.Font.FredokaOne
+        label.Parent = scrollingFrame
+
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0.2, 0, 0, 50)
+        button.Position = UDim2.new(0.75, 0, 0, (i-1) * 60)
+        button.Text = "Off"
+        button.TextScaled = true
+        button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.BackgroundTransparency = 0.5
+        button.Font = Enum.Font.FredokaOne
+        button.Parent = scrollingFrame
+
+        local buttonCorner = Instance.new("UICorner")
+        buttonCorner.CornerRadius = UDim.new(0, 8)
+        buttonCorner.Parent = button
+        
+        local function toggleTeleport()
+            teleporting = not teleporting
+            if teleporting then
+                button.Text = "On"
+                button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                while teleporting do
+                    local targetNPC = game.Workspace.NPCs:FindFirstChild(npcName)
+                    local character = player.Character
+                    if targetNPC and targetNPC.PrimaryPart and character then
+                        character:MoveTo(targetNPC.PrimaryPart.Position)
+                    end
+                    wait(1)
+                end
+            else
+                button.Text = "Off"
+                button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            end
+        end
+
+        button.MouseButton1Click:Connect(toggleTeleport)
+    end
 end
 
 local guiOpen = false
@@ -118,6 +131,7 @@ local function toggleGui()
         screenGui.Enabled = true
         local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 400, 0, 400)})
         tween:Play()
+        updateScrollingFrame()
     else
         closeGui()
     end
@@ -129,3 +143,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         toggleGui()
     end
 end)
+
+while true do
+    updateScrollingFrame()
+    wait(2) -- Alle 2 Sekunden aktualisieren
+end
