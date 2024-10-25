@@ -131,7 +131,6 @@ local function toggleGui()
         screenGui.Enabled = true
         local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 400, 0, 400)})
         tween:Play()
-        updateScrollingFrame()
     else
         closeGui()
     end
