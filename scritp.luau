@@ -58,7 +58,7 @@ closeButton.MouseButton1Click:Connect(closeGui)
 local scrollingFrame = Instance.new("ScrollingFrame")
 scrollingFrame.Size = UDim2.new(1, -20, 1, -80)
 scrollingFrame.Position = UDim2.new(0, 10, 0, 70)
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 4, 0)
 scrollingFrame.ScrollBarThickness = 8
 scrollingFrame.BackgroundTransparency = 1
 scrollingFrame.Parent = mainFrame
