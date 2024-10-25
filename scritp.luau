@@ -1,11 +1,14 @@
 local player = game.Players.LocalPlayer
 local targets = {}
+local teleportingStates = {}
 
 local function updateTargets()
     targets = {}
     for _, npc in ipairs(game.Workspace.NPCs:GetChildren()) do
         if npc:IsA("Model") and npc:FindFirstChild("Humanoid") then
             table.insert(targets, npc.Name)
+            -- Setze den Anfangszustand für jeden NPC auf "false"
+            teleportingStates[npc.Name] = false
         end
     end
 end
@@ -73,8 +76,6 @@ local function updateScrollingFrame()
     updateTargets()
 
     for i, npcName in ipairs(targets) do
-        local teleporting = false
-        
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(0.7, 0, 0, 50)
         label.Position = UDim2.new(0, 0, 0, (i-1) * 60)
@@ -88,9 +89,9 @@ local function updateScrollingFrame()
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(0.2, 0, 0, 50)
         button.Position = UDim2.new(0.75, 0, 0, (i-1) * 60)
-        button.Text = "Off"
+        button.Text = teleportingStates[npcName] and "On" or "Off"
         button.TextScaled = true
-        button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        button.BackgroundColor3 = teleportingStates[npcName] and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
         button.BackgroundTransparency = 0.5
         button.Font = Enum.Font.FredokaOne
@@ -101,11 +102,12 @@ local function updateScrollingFrame()
         buttonCorner.Parent = button
         
         local function toggleTeleport()
-            teleporting = not teleporting
-            if teleporting then
-                button.Text = "On"
-                button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-                while teleporting do
+            teleportingStates[npcName] = not teleportingStates[npcName]
+            button.Text = teleportingStates[npcName] and "On" or "Off"
+            button.BackgroundColor3 = teleportingStates[npcName] and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+
+            if teleportingStates[npcName] then
+                while teleportingStates[npcName] do
                     local targetNPC = game.Workspace.ClientNPCs:FindFirstChild(npcName)
                     local character = player.Character
                     if targetNPC and targetNPC.PrimaryPart and character then
@@ -113,9 +115,6 @@ local function updateScrollingFrame()
                     end
                     wait(1)
                 end
-            else
-                button.Text = "Off"
-                button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
             end
         end
 
@@ -142,3 +141,5 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         toggleGui()
     end
 end)
+
+updateScrollingFrame()
