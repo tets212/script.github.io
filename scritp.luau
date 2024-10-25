@@ -106,7 +106,7 @@ local function updateScrollingFrame()
                 button.Text = "On"
                 button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
                 while teleporting do
-                    local targetNPC = game.Workspace.NPCs:FindFirstChild(npcName)
+                    local targetNPC = game.Workspace.ClientNPCs:FindFirstChild(npcName)
                     local character = player.Character
                     if targetNPC and targetNPC.PrimaryPart and character then
                         character:MoveTo(targetNPC.PrimaryPart.Position)
