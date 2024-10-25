@@ -1,5 +1,11 @@
 local player = game.Players.LocalPlayer
-local targets = {"Noob", "Nelson", "Jacob", "David", "Nick", "Gecko", "Captain Rampage", "Pirate King", "Captain Squid", "Sun Slayer"}
+local targets = {}
+
+for _, npc in ipairs(game.Workspace.ClientNPCs:GetChildren()) do
+    if npc:IsA("Model") and npc:FindFirstChild("Humanoid") then
+        table.insert(targets, npc.Name)
+    end
+end
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
@@ -93,7 +99,7 @@ for i, npcName in ipairs(targets) do
                 if targetNPC and targetNPC.PrimaryPart and character then
                     character:MoveTo(targetNPC.PrimaryPart.Position)
                 end
-                wait(0.01)
+                wait(1)
             end
         else
             button.Text = "Off"
