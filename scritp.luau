@@ -1,5 +1,5 @@
 local player = game.Players.LocalPlayer
-local targets = {"Noob", "Nelson", "Jacob", "David", "Nick", "Gecko"}
+local targets = {"Noob", "Nelson", "Jacob", "David", "Nick", "Gecko", "Captain Rampage", "Pirate King", "Captain Squid", "Sun Slayer"}
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
